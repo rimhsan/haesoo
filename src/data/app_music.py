@@ -5,6 +5,7 @@ import asyncio
 import yt_dlp
 
 yt_dl_options = {
+    'proxy': 'http://user:pass@proxy-server:port',
     'format': 'bestaudio[fext=webm][acodec=opus]/bestaudio',  # High-quality Opus in WebM first
     'noplaylist': True,
     'quiet': True,
@@ -16,9 +17,16 @@ yt_dl_options = {
     'skip_download': True,
     'cookiefile': 'cookies.txt',  # 👉 Use cookies to avoid 403
     'http_headers': {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-us,en;q=0.5',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1',
     }
 }
 
