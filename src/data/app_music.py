@@ -6,6 +6,10 @@ from dotenv import load_dotenv
 import asyncio
 import yt_dlp
 
+# Load environment variables
+load_dotenv()
+
+# --- 🎵 yt-dlp Options ---
 yt_dl_options = {
     'format': 'bestaudio[fext=webm][acodec=opus][channels=2]/bestaudio[channels=2]/bestaudio',
     'noplaylist': True,
@@ -16,10 +20,10 @@ yt_dl_options = {
     'ignoreerrors': False,
     'logtostderr': False,
     'skip_download': True,
-    'cookiefile': 'cookies.txt',
+    'cookiefile': 'cookies.txt',  # Use cookies to avoid 403
     'extractor_args': {
         'youtube': {
-            'key': os.getenv('KEY')
+            'key': os.getenv('KEY')  # Use YouTube API key
         }
     },
     'http_headers': {
@@ -37,6 +41,7 @@ yt_dl_options = {
 
 ytdl = yt_dlp.YoutubeDL(yt_dl_options)
 
+# --- 🔊 FFmpeg Options (High Quality Stereo Audio) ---
 ffmpeg_options = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
     'options': '-vn -c:a libopus -b:a 192k -ac 2 -application audio -vbr on -compression_level 10'
@@ -46,8 +51,9 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.voice_clients = {}
-        self.queues = {}         # Queue: guild_id -> [(url, title)]
-        self.text_channels = {}  # Track text channel for follow-up messages
+        self.queues = {}           # Queue: guild_id -> [(url, title)]
+        self.text_channels = {}    # Track text channel for follow-up messages
+        self.interactions = {}     # Store interaction per guild to access .guild.me
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -58,7 +64,6 @@ class Music(commands.Cog):
         """Play a song in the user's voice channel from a URL or search query"""
         try:
             await interaction.response.defer(ephemeral=False)
-
             if not interaction.user.voice:
                 embed = discord.Embed(
                     color=0xf33e43,
@@ -80,6 +85,7 @@ class Music(commands.Cog):
             if guild_id not in self.queues:
                 self.queues[guild_id] = []
             self.text_channels[guild_id] = interaction.channel
+            self.interactions[guild_id] = interaction  # Store for use in play_next_song
 
             # Handle search vs direct URL
             if not query.startswith("http"):
@@ -91,9 +97,9 @@ class Music(commands.Cog):
 
             # Handle search vs direct URL
             if 'entries' in data:
-                video = data['entries'][0]  # Take the first result from a playlist or search
+                video = data['entries'][0]  # Take the first result
             else:
-                video = data  # Direct URL or single video
+                video = data
 
             song_url = video['url']
             song_title = video['title']
@@ -102,8 +108,12 @@ class Music(commands.Cog):
             self.queues[guild_id].append((song_url, song_title))
 
             # Confirm addition
+            color = interaction.guild.me.top_role.color
+            if color.value == 0:  # Fallback if color is default (black)
+                color = 0x00ff88
+
             queue_embed = discord.Embed(
-                color=interaction.guild.me.top_role.color,
+                color=color,
                 description=f"**Added to queue:** {song_title}"
             )
             msg = await interaction.followup.send(embed=queue_embed)
@@ -133,6 +143,8 @@ class Music(commands.Cog):
                 del self.queues[guild_id]
                 if guild_id in self.text_channels:
                     del self.text_channels[guild_id]
+                if guild_id in self.interactions:
+                    del self.interactions[guild_id]
             return
 
         vc = self.voice_clients.get(guild_id)
@@ -141,23 +153,38 @@ class Music(commands.Cog):
 
         # Get next song
         song_url, song_title = self.queues[guild_id].pop(0)
-
         try:
-            # Re-extract to get direct stream URL
+            # Re-extract to get direct stream URL and metadata
             info = ytdl.extract_info(song_url, download=False)
             audio_url = info['url']
 
-            # Create high-quality player
+            # Create high-quality player (stereo)
             player = discord.FFmpegOpusAudio(audio_url, **ffmpeg_options)
             vc.play(player, after=lambda e: self.on_song_end(guild_id))
 
             # Send "Now Playing" to stored text channel
             text_channel = self.text_channels.get(guild_id)
             if text_channel:
+                interaction = self.interactions.get(guild_id)
+                if not interaction:
+                    # Fallback color if interaction missing
+                    color = 0x00ff88
+                else:
+                    color = interaction.guild.me.top_role.color
+                    if color.value == 0:
+                        color = 0x00ff88  # Fallback green
+
                 embed = discord.Embed(
-                    color=0x00ff88,
+                    color=color,
                     description=f"🎧 **Now playing:** {song_title}"
                 )
+                # Add thumbnail if available
+                if 'thumbnail' in info and info['thumbnail']:
+                    embed.set_thumbnail(url=info['thumbnail'])
+                else:
+                    # Optional: Set a fallback thumbnail
+                    embed.set_thumbnail(url="https://i.imgur.com/4q2B6AX.png")  # Generic music icon
+
                 embed.set_footer(
                     text=f"{text_channel.guild.name}",
                     icon_url=text_channel.guild.icon.url if text_channel.guild.icon else None
@@ -229,6 +256,8 @@ class Music(commands.Cog):
             del self.queues[guild_id]
             if guild_id in self.text_channels:
                 del self.text_channels[guild_id]
+            if guild_id in self.interactions:
+                del self.interactions[guild_id]
             embed = discord.Embed(color=0x7289da, description="⏹️ **Stopped and disconnected.**")
             await interaction.response.send_message(embed=embed)
         else:
@@ -250,7 +279,15 @@ class Music(commands.Cog):
         if len(queue) > 10:
             description += f"\n*... and {len(queue) - 10} more.*"
 
-        embed = discord.Embed(title="🎵 Music Queue", description=description, color=0x00ff88)
+        color = interaction.guild.me.top_role.color
+        if color.value == 0:
+            color = 0x00ff88
+
+        embed = discord.Embed(
+            title="🎵 Music Queue",
+            description=description,
+            color=color
+        )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
