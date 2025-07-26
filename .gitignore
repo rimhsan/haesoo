@@ -3,3 +3,5 @@ src/data/__pycache__/app_information.cpython-312.pyc
 src/data/__pycache__/app_moderation.cpython-312.pyc
 src/data/__pycache__/app_music.cpython-312.pyc
 src/data/__pycache__/app_random.cpython-312.pyc
+src/data/__pycache__/app_music.cpython-312.pyc
+.gitignore

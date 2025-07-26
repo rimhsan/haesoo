@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import asyncio
 import yt_dlp
 
-# Load environment variables
+# Load environment variables (.env file)
 load_dotenv()
 
 # --- 🎵 yt-dlp Options ---
@@ -23,7 +23,7 @@ yt_dl_options = {
     'cookiefile': 'cookies.txt',  # Helps bypass 403/age-restrict
     'extractor_args': {
         'youtube': {
-            'key': os.getenv('KEY')  # Use YouTube Data API key
+            'key': os.getenv('KEY')  # Use your YouTube Data API key
         }
     },
     'http_headers': {
@@ -87,7 +87,7 @@ class Music(commands.Cog):
             if guild_id not in self.queues:
                 self.queues[guild_id] = []
             self.text_channels[guild_id] = interaction.channel
-            self.interactions[guild_id] = interaction  # For color & future use
+            self.interactions[guild_id] = interaction  # For dynamic color
 
             # Handle search vs direct URL
             if not query.startswith(("http://", "https://")):
@@ -97,9 +97,8 @@ class Music(commands.Cog):
             loop = asyncio.get_event_loop()
             data = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
 
-            # Handle search results, playlists, or single videos
+            # Handle playlists, search results, or single videos
             if 'entries' in data and data['entries']:
-                # Take first video from search or playlist
                 video = data['entries'][0]
                 if not video:
                     raise ValueError("No video found in search results.")
@@ -172,7 +171,7 @@ class Music(commands.Cog):
             info = ytdl.extract_info(song_url, download=False)
             audio_url = info['url']
 
-            # Create player (stereo)
+            # Create FFmpeg player (stereo)
             player = discord.FFmpegOpusAudio(audio_url, **ffmpeg_options)
             vc.play(player, after=lambda e: self.on_song_end(guild_id))
 
@@ -186,18 +185,21 @@ class Music(commands.Cog):
                     if color.value == 0:
                         color = 0x00ff88
 
+                # ✅ Taller embed: separate title from description
                 embed = discord.Embed(
-                    color=color,
-                    description=f"🎧 **Now playing:** {song_title}"
+                    title="🎧 Now Playing",
+                    description=f"**{song_title}**",
+                    color=color
                 )
 
-                # ✅ Set thumbnail from cached data
+                # ✅ Add thumbnail
                 if thumbnail_url:
                     embed.set_thumbnail(url=thumbnail_url)
                 else:
                     # Fallback thumbnail
                     embed.set_thumbnail(url="https://i.imgur.com/4q2B6AX.png")
 
+                # Footer with server name
                 embed.set_footer(
                     text=f"{text_channel.guild.name}",
                     icon_url=text_channel.guild.icon.url if text_channel.guild.icon else None
@@ -221,6 +223,7 @@ class Music(commands.Cog):
 
     @app_commands.command(name="pause", description="Pause the current song")
     async def pause(self, interaction: discord.Interaction):
+        """Pause playback"""
         vc = self.voice_clients.get(interaction.guild.id)
         if vc and vc.is_playing():
             vc.pause()
@@ -232,6 +235,7 @@ class Music(commands.Cog):
 
     @app_commands.command(name="resume", description="Resume the paused song")
     async def resume(self, interaction: discord.Interaction):
+        """Resume playback"""
         vc = self.voice_clients.get(interaction.guild.id)
         if vc and vc.is_paused():
             vc.resume()
@@ -243,6 +247,7 @@ class Music(commands.Cog):
 
     @app_commands.command(name="next", description="Skip to the next song in the queue")
     async def next_song(self, interaction: discord.Interaction):
+        """Skip current song"""
         await interaction.response.defer()
         vc = self.voice_clients.get(interaction.guild.id)
         if vc and vc.is_playing():
@@ -255,6 +260,7 @@ class Music(commands.Cog):
 
     @app_commands.command(name="stop", description="Stop and disconnect the bot")
     async def stop(self, interaction: discord.Interaction):
+        """Stop playback and disconnect"""
         guild_id = interaction.guild.id
         vc = self.voice_clients.get(guild_id)
         if vc:
@@ -275,6 +281,7 @@ class Music(commands.Cog):
 
     @app_commands.command(name="queue", description="Show the current music queue")
     async def show_queue(self, interaction: discord.Interaction):
+        """Show the music queue"""
         guild_id = interaction.guild.id
         queue = self.queues.get(guild_id, [])
         if not queue:
@@ -299,5 +306,6 @@ class Music(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
+# Register cog
 async def setup(bot):
     await bot.add_cog(Music(bot))
