@@ -1,1 +1,1 @@
-# made by rimhsan, for rimhsan
+# bot trial
