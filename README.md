@@ -5,7 +5,7 @@
 **A lightweight all-around Discord bot built with Python and discord.py**
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org)
-[![Invite](https://img.shields.io/badge/discord.py-v2.0+-7289DA?logo=discord&logoColor=white)]([https://discord.com/api/oauth2/authorize?client_id=1040929438122131517&permissions=2654203206&scope=bot%20applications.commands])
+[![Invite](https://img.shields.io/badge/discord.py-v2.0+-7289DA?logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=1040929438122131517&permissions=2654203206&scope=bot%20applications.commands)
 
 </div>
 
