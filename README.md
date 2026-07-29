@@ -11,21 +11,21 @@
 
 ---
 
-## ✨ About
+## About
 
 **haesoo** (해수) is a multipurpose Discord bot that brings moderation tools, music playback, utility commands, and fun interactions to your server. Built with discord.py, it uses slash commands for a modern user experience.
 
 ---
 
-## 🚀 Features
+## Features
 
-### 🛡️ Moderation
+### Moderation
 - `/ban` — Ban members with optional reason
 - `/unban` — Unban previously banned members
 - `/kick` — Kick members from the server
 - `/clear` — Bulk delete messages
 
-### 🎵 Music
+### Music
 - `/play` — Play songs from YouTube (URL or search query)
 - `/pause` / `/resume` — Control playback
 - `/next` — Skip to the next song
@@ -34,7 +34,7 @@
 - High-quality stereo audio via FFmpeg/Opus
 - Queue management with automatic playback
 
-### ℹ️ Information & Utility
+### Information & Utility
 - `/info` — Display bot information
 - `/ping` — Check bot latency
 - `/avatar` — View any user's avatar
