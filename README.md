@@ -6,7 +6,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org)
 [![discord.py](https://img.shields.io/badge/discord.py-v2.0+-7289DA?logo=discord&logoColor=white)](https://discordpy.readthedocs.io)
-[![Invite](https://img.shields.io/github/license/rimhsan/haesoo)](LICENSE)
+[![Invite](https://img.shields.io/github/license/rimhsan/haesoo)]([LICENSE](https://discord.com/api/oauth2/authorize?client_id=1040929438122131517&permissions=2654203206&scope=bot%20applications.commands))
 
 </div>
 
