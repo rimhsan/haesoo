@@ -39,9 +39,3 @@
 - `/info` — Display bot information
 - `/ping` — Check bot latency
 - `/avatar` — View any user's avatar
-
-### 🌀 Fun & Random
-- `/dionela` — Share a vibe
-- `/sad` — Mood check
-- `/linyahan` — A sadboy moment
-- `/stats` — Life stats embed
