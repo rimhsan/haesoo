@@ -6,7 +6,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org)
 [![discord.py](https://img.shields.io/badge/discord.py-v2.0+-7289DA?logo=discord&logoColor=white)](https://discordpy.readthedocs.io)
-[![License](https://img.shields.io/github/license/rimhsan/haesoo)](LICENSE)
+[![Invite](https://img.shields.io/github/license/rimhsan/haesoo)](LICENSE)
 
 </div>
 
