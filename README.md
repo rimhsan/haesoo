@@ -14,7 +14,7 @@
 
 ## ✨ About
 
-**haesoo** (해수) is a multipurpose Discord bot that brings moderation tools, music playback, utility commands, and fun interactions to your server. Built with [discord.py](https://github.com/Rapptz/discord.py), it uses slash commands for a modern user experience.
+**haesoo** (해수) is a multipurpose Discord bot that brings moderation tools, music playback, utility commands, and fun interactions to your server. Built with discord.py, it uses slash commands for a modern user experience.
 
 ---
 
