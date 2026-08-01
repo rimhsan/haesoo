@@ -51,17 +51,5 @@ class random(commands.Cog):
     async def linyahan(self, interaction: discord.Interaction):
         await interaction.response.send_message(f'*wala na kami bro pero nagpapa-salamat pa rin ako sa kanya kase... \nkahit sa konting panahon i was genuinely happy. <:what:1016599618072625172>*')
 
-    @app_commands.command(name="stats", description='stats sa buhay')
-    async def stats(self, interaction: discord.Interaction):
-        member = interaction.user
-        server = interaction.guild
-        bot = server.me
-        stats_embeded = discord.Embed(title='2025 stats', color=bot.top_role.color)
-        stats_embeded.add_field(name="naagrabyadong tao", value="*3*", inline=False)
-        stats_embeded.add_field(name="lambing", value="*0*", inline=False)
-        stats_embeded.add_field(name="average hours of sleep", value="*6*", inline=False)
-        stats_embeded.set_author(name=f"{member.name}", icon_url=member.avatar.url)
-        await interaction.response.send_message(embed=stats_embeded)
-
 async def setup(bot):
     await bot.add_cog(random(bot))
